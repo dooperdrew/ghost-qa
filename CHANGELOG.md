@@ -2,6 +2,26 @@
 
 Chronological record of milestones, decisions and discoveries. Newest first.
 
+## 2026-11-02 — Repository Audit, Security Hardening & Concurrency Safety
+- **Repository Stabilization & Gate Reliability (ISSUE-01, ISSUE-10):**
+  - Cleaned untracked experimental stubs and reverted broken syntax; updated workspace `Cargo.toml`.
+  - Fixed flaky `NFR-P1` benchmark in `crates/platform/tests/hardening_tests.rs` by adding 2 unmeasured warm-up captures and 30-sample p95 calculation.
+- **Actuation & Concurrency Safety (ISSUE-02, ISSUE-03, ISSUE-04, ISSUE-05, ISSUE-08):**
+  - Eliminated UIA pattern invoke double-click fallthrough in `crates/platform/src/actuator.rs`.
+  - Added targeted coordinate click and `try_uia_toggle_by_name` for `UiAction::Toggle`.
+  - Replaced unsafe `static mut GLOBAL_TELEMETRY` with Win32 `GWLP_USERDATA` / `WM_NCCREATE` in `crates/probe/src/dummy_window.rs`.
+  - Created RAII `ComGuard` in `crates/platform/src/actuator.rs` ensuring thread-safe COM teardown with `CoUninitialize`.
+  - Hardened selftest and probe windows with unique UUID class names and titles to eliminate test cross-talk.
+- **Process Lifecycle, Telemetry & Security (ISSUE-06, ISSUE-07, ISSUE-09, ISSUE-14):**
+  - Implemented real-time CPU % calculation in `crates/platform/src/process.rs` using `GetProcessTimes` across normalized cores.
+  - Added Win32 Job Object with `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE` to guarantee zero orphan target child processes on crash or exit.
+  - Secured Gemini API requests by sending `x-goog-api-key` in HTTP headers instead of query parameters.
+  - Optimized log tailer with persistent file handles and log rotation/truncation detection.
+- **Architecture Alignment, WebView2 Shell & Complete i18n (ISSUE-11, ISSUE-12, ISSUE-13, ISSUE-15):**
+  - Documented ADR `0002-edge-webview2-app-shell.md` and reconciled requirements / architecture specs for localhost TCP loopback and Edge WebView2 `--app` shell.
+  - Fully internationalized all CLI terminal output strings across English and Italian catalogs.
+  - Documented 15 comprehensive issue specifications in `docs/issues/` and master audit plan in `docs/audit-issues-and-implementation-plan.md`.
+
 ## 2026-10-27 — Release v0.2.1 (RFC Feedback Integration: Deterministic Replay, Tab Idempotency, DWM Calibration, Multi-HWND & Automated Issue Sync)
 - **Tab & Toggle Idempotency (`UX-DEAD-BTN` Fix):**
   - Queried `UIA_SelectionItemPatternId` and `UIA_TogglePatternId` in `crates/platform/src/actuator.rs` to populate `UiElement::is_selected`.

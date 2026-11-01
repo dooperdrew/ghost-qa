@@ -12,11 +12,12 @@ use windows::Win32::Graphics::Gdi::{
 };
 use windows::Win32::System::LibraryLoader::GetModuleHandleW;
 use windows::Win32::UI::WindowsAndMessaging::{
-    CreateWindowExW, DefWindowProcW, DestroyWindow, DispatchMessageW, GetMessageW, PostMessageW,
-    PostQuitMessage, RegisterClassW, ShowWindow, TranslateMessage, CW_USEDEFAULT, HMENU, MSG,
+    CreateWindowExW, DefWindowProcW, DestroyWindow, DispatchMessageW, GetMessageW,
+    GetWindowLongPtrW, PostMessageW, PostQuitMessage, RegisterClassW, SetWindowLongPtrW,
+    ShowWindow, TranslateMessage, CREATESTRUCTW, CW_USEDEFAULT, GWLP_USERDATA, HMENU, MSG,
     SW_SHOWNOACTIVATE, WINDOW_EX_STYLE, WM_CHAR, WM_CLOSE, WM_COMMAND, WM_DESTROY, WM_KEYDOWN,
-    WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE, WM_PAINT, WNDCLASSW, WS_CHILD, WS_OVERLAPPEDWINDOW,
-    WS_VISIBLE,
+    WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEMOVE, WM_NCCREATE, WM_PAINT, WNDCLASSW, WS_CHILD,
+    WS_OVERLAPPEDWINDOW, WS_VISIBLE,
 };
 
 #[derive(Debug, Default)]
@@ -30,8 +31,6 @@ pub struct DummyWindowTelemetry {
     pub last_click_y: AtomicU32,
     pub closed: AtomicBool,
 }
-
-static mut GLOBAL_TELEMETRY: Option<*const DummyWindowTelemetry> = None;
 
 pub struct DummyWindowHandle {
     pub hwnd_raw: isize,
@@ -47,11 +46,6 @@ impl DummyWindowHandle {
         let (tx, rx) = mpsc::channel::<anyhow::Result<(isize, isize)>>();
 
         let join_handle = thread::spawn(move || {
-            // SAFETY: Storing a raw pointer to an Arc-backed struct that outlives the window thread.
-            unsafe {
-                GLOBAL_TELEMETRY = Some(Arc::as_ptr(&telemetry_clone));
-            }
-
             // SAFETY: GetModuleHandleW(None) returns the current process module handle.
             let hinstance = unsafe { GetModuleHandleW(None) };
             let hinstance = match hinstance {
@@ -62,7 +56,15 @@ impl DummyWindowHandle {
                 }
             };
 
-            let class_name: PCWSTR = w!("UiQaProbeDummyWindowClass");
+            let uid = uuid::Uuid::new_v4();
+            let class_name_str = format!("UiQaProbeDummyWindowClass_{}\0", uid.simple());
+            let class_name_u16: Vec<u16> = class_name_str.encode_utf16().collect();
+            let class_name = PCWSTR(class_name_u16.as_ptr());
+
+            let title_str = format!("UI-QA-Probe Background Target {}\0", uid.simple());
+            let title_u16: Vec<u16> = title_str.encode_utf16().collect();
+            let title = PCWSTR(title_u16.as_ptr());
+
             let wc = WNDCLASSW {
                 lpfnWndProc: Some(dummy_wnd_proc),
                 hInstance: hinstance.into(),
@@ -70,17 +72,17 @@ impl DummyWindowHandle {
                 ..Default::default()
             };
 
-            // SAFETY: Registering a local window class with a valid static window procedure.
+            // SAFETY: Registering a unique local window class with a valid static window procedure.
             unsafe {
                 let _ = RegisterClassW(&wc);
             }
 
-            // SAFETY: Creating an overlapped top-level window without activating it.
+            // SAFETY: Creating an overlapped top-level window without activating it, passing telemetry Arc pointer as lpParam.
             let hwnd_res = unsafe {
                 CreateWindowExW(
                     WINDOW_EX_STYLE(0),
                     class_name,
-                    w!("UI-QA-Probe Background Target"),
+                    title,
                     WS_OVERLAPPEDWINDOW,
                     CW_USEDEFAULT,
                     CW_USEDEFAULT,
@@ -89,7 +91,7 @@ impl DummyWindowHandle {
                     None,
                     None,
                     hinstance,
-                    None,
+                    Some(Arc::as_ptr(&telemetry_clone) as *const _),
                 )
             };
 
@@ -179,7 +181,18 @@ unsafe extern "system" fn dummy_wnd_proc(
     wparam: WPARAM,
     lparam: LPARAM,
 ) -> LRESULT {
-    let telemetry_opt = GLOBAL_TELEMETRY.and_then(|ptr| ptr.as_ref());
+    if msg == WM_NCCREATE {
+        let cs = &*(lparam.0 as *const CREATESTRUCTW);
+        SetWindowLongPtrW(hwnd, GWLP_USERDATA, cs.lpCreateParams as isize);
+        return DefWindowProcW(hwnd, msg, wparam, lparam);
+    }
+
+    let p_telemetry = GetWindowLongPtrW(hwnd, GWLP_USERDATA);
+    let telemetry_opt = if p_telemetry != 0 {
+        (p_telemetry as *const DummyWindowTelemetry).as_ref()
+    } else {
+        None
+    };
 
     match msg {
         WM_MOUSEMOVE => {

@@ -43,5 +43,14 @@
   "arch.section.overview": "Non-Intrusive Background QA Engine",
   "arch.section.actuation": "3-Tier Background Input Actuation & Capture",
   "arch.section.multiagent": "Hub-and-Spoke Multi-Agent Delivery & Complexity Tiers",
-  "cli.selftest.pass": "Self-test completed: background capture, UIA inspection, log correlation, and report generation verified."
+  "cli.selftest.pass": "Self-test completed: background capture, UIA inspection, log correlation, and report generation verified.",
+  "cli.init.wrote": "Wrote starter configuration to",
+  "cli.report.markdown": "  Markdown Report :",
+  "cli.report.json": "  JSON Report     :",
+  "cli.report.screenshots": "  Screenshots Dir :",
+  "cli.report.findings": "  Findings Count  :",
+  "cli.replay.complete": "Trace replay complete. Summary:",
+  "cli.session.complete": "Session complete.",
+  "cli.session.coverage": "  Element Coverage:",
+  "cli.gate.failed": "[CI/CD GATE FAILED]"
 }

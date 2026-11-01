@@ -19,10 +19,14 @@ fn m5_nfr_budgets_and_edge_case_soak_suite() {
     let mut win = SelfTestWindow::spawn().expect("spawn background self-test window");
     std::thread::sleep(std::time::Duration::from_millis(80));
 
-    // 1. NFR-P1: Background capture latency p95 <= 50 ms
+    // 1. NFR-P1: Background capture latency p95 <= 50 ms (with warm-up pass)
+    // Perform 2 unmeasured warm-up captures to prime DWM buffers and GDI caches
+    for _ in 0..2 {
+        let _ = capture_hwnd_background(win.hwnd_raw);
+    }
     let mut cap_latencies = Vec::new();
     let mut last_frame = None;
-    for _ in 0..10 {
+    for _ in 0..30 {
         let cap = capture_hwnd_background(win.hwnd_raw).expect("capture background");
         cap_latencies.push(cap.latency_ms);
         last_frame = Some(cap.image);

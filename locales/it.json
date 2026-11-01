@@ -43,5 +43,14 @@
   "arch.section.overview": "Motore QA in Background Non Intrusivo",
   "arch.section.actuation": "Attuazione Input e Cattura in Background a 3 Livelli",
   "arch.section.multiagent": "Delivery Multi-Agente Hub-and-Spoke e Livelli di Complessità",
-  "cli.selftest.pass": "Auto-test completato: cattura in background, ispezione UIA, correlazione log e generazione report verificati."
+  "cli.selftest.pass": "Auto-test completato: cattura in background, ispezione UIA, correlazione log e generazione report verificati.",
+  "cli.init.wrote": "Configurazione iniziale salvata in",
+  "cli.report.markdown": "  Report Markdown :",
+  "cli.report.json": "  Report JSON     :",
+  "cli.report.screenshots": "  Cartella Screenshot:",
+  "cli.report.findings": "  Totale Difetti  :",
+  "cli.replay.complete": "Replay della traccia completato. Riepilogo:",
+  "cli.session.complete": "Sessione completata.",
+  "cli.session.coverage": "  Copertura Elementi:",
+  "cli.gate.failed": "[GATE CI/CD FALLITO]"
 }

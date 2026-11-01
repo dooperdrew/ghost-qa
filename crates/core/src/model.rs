@@ -97,6 +97,10 @@ pub enum UiAction {
     Toggle {
         element_id: String,
         element_name: String,
+        #[serde(default)]
+        x: i32,
+        #[serde(default)]
+        y: i32,
     },
 }
 

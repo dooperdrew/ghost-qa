@@ -9,7 +9,7 @@ use windows::Win32::Foundation::{BOOL, HWND, LPARAM, POINT, RECT, WPARAM};
 use windows::Win32::Graphics::Dwm::{DwmGetWindowAttribute, DWMWA_EXTENDED_FRAME_BOUNDS};
 use windows::Win32::Graphics::Gdi::ScreenToClient;
 use windows::Win32::System::Com::{
-    CoCreateInstance, CoInitializeEx, CLSCTX_INPROC_SERVER, COINIT_MULTITHREADED,
+    CoCreateInstance, CoInitializeEx, CoUninitialize, CLSCTX_INPROC_SERVER, COINIT_MULTITHREADED,
 };
 use windows::Win32::UI::Accessibility::{
     CUIAutomation, IUIAutomation, IUIAutomationElement, IUIAutomationInvokePattern,
@@ -103,12 +103,34 @@ unsafe extern "system" fn enum_child_proc(hwnd: HWND, lparam: LPARAM) -> BOOL {
     BOOL(1)
 }
 
+/// RAII guard for COM thread apartment initialization, ensuring `CoUninitialize` is always called on drop.
+struct ComGuard {
+    initialized: bool,
+}
+
+impl ComGuard {
+    fn init_mta() -> Self {
+        // SAFETY: CoInitializeEx initializes the COM library for use by the calling thread.
+        let hr = unsafe { CoInitializeEx(None, COINIT_MULTITHREADED) };
+        let initialized = hr.is_ok();
+        Self { initialized }
+    }
+}
+
+impl Drop for ComGuard {
+    fn drop(&mut self) {
+        if self.initialized {
+            // SAFETY: Closes the COM library on the current thread and unloads all DLLs.
+            unsafe {
+                CoUninitialize();
+            }
+        }
+    }
+}
+
 /// Extracts the UIA / AccessKit element tree for `hwnd_raw`, normalizing coordinates to client/window relative bounds.
 pub fn inspect_window_uia_elements(hwnd_raw: isize) -> Result<Vec<UiElement>, String> {
-    // SAFETY: Initializing COM in MTA mode on current thread.
-    unsafe {
-        let _ = CoInitializeEx(None, COINIT_MULTITHREADED);
-    }
+    let _com_guard = ComGuard::init_mta();
 
     let hwnd = HWND(hwnd_raw as *mut _);
     let mut win_rect = RECT::default();
@@ -403,7 +425,9 @@ pub fn dispatch_action_background(
         UiAction::Click {
             element_name, x, y, ..
         } => {
-            let _ = !element_name.trim().is_empty() && try_uia_invoke_by_name(hwnd, element_name);
+            if !element_name.trim().is_empty() && try_uia_invoke_by_name(hwnd, element_name) {
+                return Ok(());
+            }
             let target_hwnd = find_render_widget_target(hwnd);
             let mut top_rect = RECT::default();
             // SAFETY: Query DWMWA_EXTENDED_FRAME_BOUNDS or GetWindowRect for screen origin of top-level window.
@@ -450,12 +474,45 @@ pub fn dispatch_action_background(
             }
             Ok(())
         }
-        UiAction::Toggle { .. } => {
-            let lparam = LPARAM(((60usize << 16) | 60usize) as isize);
-            // SAFETY: Posting synthetic click to toggle target control.
+        UiAction::Toggle {
+            element_name, x, y, ..
+        } => {
+            if !element_name.trim().is_empty() && try_uia_toggle_by_name(hwnd, element_name) {
+                return Ok(());
+            }
+            let target_hwnd = find_render_widget_target(hwnd);
+            let mut top_rect = RECT::default();
+            // SAFETY: Query DWMWA_EXTENDED_FRAME_BOUNDS or GetWindowRect for screen origin of top-level window.
             unsafe {
-                let _ = PostMessageW(hwnd, WM_LBUTTONDOWN, WPARAM(MK_LBUTTON_FLAG), lparam);
-                let _ = PostMessageW(hwnd, WM_LBUTTONUP, WPARAM(0), lparam);
+                let dwm_res = DwmGetWindowAttribute(
+                    hwnd,
+                    DWMWA_EXTENDED_FRAME_BOUNDS,
+                    &mut top_rect as *mut _ as *mut _,
+                    std::mem::size_of::<RECT>() as u32,
+                );
+                if dwm_res.is_err() {
+                    let _ = GetWindowRect(hwnd, &mut top_rect);
+                }
+            }
+            let mut pt = POINT {
+                x: top_rect.left + *x,
+                y: top_rect.top + *y,
+            };
+            // SAFETY: ScreenToClient converts screen coordinate to target child window client coordinate.
+            unsafe {
+                let _ = ScreenToClient(target_hwnd, &mut pt);
+            }
+            let cx = pt.x.max(0) as usize & 0xFFFF;
+            let cy = pt.y.max(0) as usize & 0xFFFF;
+            let lparam = LPARAM(((cy << 16) | cx) as isize);
+            // SAFETY: Posting synthetic click to toggle target control at its actual coordinates.
+            unsafe {
+                PostMessageW(target_hwnd, WM_MOUSEMOVE, WPARAM(0), lparam)
+                    .map_err(|e| format!("PostMessageW(WM_MOUSEMOVE) failed: {e}"))?;
+                PostMessageW(target_hwnd, WM_LBUTTONDOWN, WPARAM(MK_LBUTTON_FLAG), lparam)
+                    .map_err(|e| format!("PostMessageW(WM_LBUTTONDOWN) failed: {e}"))?;
+                PostMessageW(target_hwnd, WM_LBUTTONUP, WPARAM(0), lparam)
+                    .map_err(|e| format!("PostMessageW(WM_LBUTTONUP) failed: {e}"))?;
             }
             Ok(())
         }
@@ -463,9 +520,9 @@ pub fn dispatch_action_background(
 }
 
 fn try_uia_invoke_by_name(hwnd: HWND, target_name: &str) -> bool {
-    // SAFETY: Initializing COM and walking UIA tree up to depth 20 to invoke a matching element via IUIAutomationInvokePattern.
+    let _com_guard = ComGuard::init_mta();
+    // SAFETY: Walking UIA tree up to depth 20 to invoke a matching element via IUIAutomationInvokePattern.
     unsafe {
-        let _ = CoInitializeEx(None, COINIT_MULTITHREADED);
         let Ok(uia) =
             CoCreateInstance::<_, IUIAutomation>(&CUIAutomation, None, CLSCTX_INPROC_SERVER)
         else {
@@ -522,6 +579,75 @@ unsafe fn invoke_matching_in_subtree(
             }
             if depth < max_depth
                 && invoke_matching_in_subtree(walker, &el, target_name, depth + 1, max_depth)
+            {
+                return true;
+            }
+        }
+        current_opt = walker.GetNextSiblingElement(&el).ok();
+    }
+    false
+}
+
+fn try_uia_toggle_by_name(hwnd: HWND, target_name: &str) -> bool {
+    let _com_guard = ComGuard::init_mta();
+    // SAFETY: Walking UIA tree up to depth 20 to toggle a matching element via IUIAutomationTogglePattern.
+    unsafe {
+        let Ok(uia) =
+            CoCreateInstance::<_, IUIAutomation>(&CUIAutomation, None, CLSCTX_INPROC_SERVER)
+        else {
+            return false;
+        };
+        let Ok(walker) = uia.ControlViewWalker() else {
+            return false;
+        };
+        if let Ok(root_el) = uia.ElementFromHandle(hwnd) {
+            if toggle_matching_in_subtree(&walker, &root_el, target_name, 1, 20) {
+                return true;
+            }
+        }
+        for child in find_child_windows_for_hwnd(hwnd) {
+            if let Ok(child_el) = uia.ElementFromHandle(child) {
+                if toggle_matching_in_subtree(&walker, &child_el, target_name, 1, 20) {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+}
+
+// SAFETY: Caller provides valid `IUIAutomationTreeWalker` and `IUIAutomationElement` on a COM-initialized thread.
+unsafe fn toggle_matching_in_subtree(
+    walker: &windows::Win32::UI::Accessibility::IUIAutomationTreeWalker,
+    parent: &IUIAutomationElement,
+    target_name: &str,
+    depth: usize,
+    max_depth: usize,
+) -> bool {
+    if depth > max_depth {
+        return false;
+    }
+    let Ok(first_child) = walker.GetFirstChildElement(parent) else {
+        return false;
+    };
+    let mut current_opt: Option<IUIAutomationElement> = Some(first_child);
+    while let Some(el) = current_opt {
+        let control_type_id = el.CurrentControlType().map(|c| c.0).unwrap_or(0);
+        if control_type_id != 50037 && control_type_id != 50010 {
+            let name = el.CurrentName().map(|b| b.to_string()).unwrap_or_default();
+            if name == target_name {
+                if let Ok(pat) = el.GetCurrentPattern(UIA_TogglePatternId) {
+                    if let Ok(tog) =
+                        windows::core::Interface::cast::<IUIAutomationTogglePattern>(&pat)
+                    {
+                        if tog.Toggle().is_ok() {
+                            return true;
+                        }
+                    }
+                }
+            }
+            if depth < max_depth
+                && toggle_matching_in_subtree(walker, &el, target_name, depth + 1, max_depth)
             {
                 return true;
             }

@@ -45,7 +45,15 @@ impl SelfTestWindow {
                 }
             };
 
-            let class_name: PCWSTR = w!("UiQaSelfTestHardwareWindowClass");
+            let uid = uuid::Uuid::new_v4();
+            let class_name_str = format!("UiQaSelfTestHardwareWindowClass_{}\0", uid.simple());
+            let class_name_u16: Vec<u16> = class_name_str.encode_utf16().collect();
+            let class_name = PCWSTR(class_name_u16.as_ptr());
+
+            let title_str = format!("Hardware Controller Demo (Target App) {}\0", uid.simple());
+            let title_u16: Vec<u16> = title_str.encode_utf16().collect();
+            let title = PCWSTR(title_u16.as_ptr());
+
             let wc = WNDCLASSW {
                 lpfnWndProc: Some(selftest_wnd_proc),
                 hInstance: hinstance.into(),
@@ -63,7 +71,7 @@ impl SelfTestWindow {
                 CreateWindowExW(
                     WINDOW_EX_STYLE(0),
                     class_name,
-                    w!("Hardware Controller Demo (Target App)"),
+                    title,
                     WS_OVERLAPPEDWINDOW,
                     CW_USEDEFAULT,
                     CW_USEDEFAULT,

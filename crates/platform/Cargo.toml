@@ -13,4 +13,5 @@ serde_json.workspace = true
 thiserror.workspace = true
 chrono.workspace = true
 image.workspace = true
+uuid.workspace = true
 windows.workspace = true

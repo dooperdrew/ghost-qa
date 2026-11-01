@@ -22,7 +22,7 @@
 - **F3.2** Execute UI interactions in **Background Focus Mode** (`focus_mode = "background"`) without moving the user's physical mouse cursor or stealing active foreground window focus, using a 3-tier dispatch strategy:
   1. **Tier 1 (UIA Patterns):** `IUIAutomationInvokePattern::Invoke`, `IUIAutomationValuePattern::SetValue`, `IUIAutomationTogglePattern::Toggle`, `IUIAutomationSelectionItemPattern::Select`, `IUIAutomationScrollPattern::Scroll`.
   2. **Tier 2 (Direct HWND Message Injection):** `PostMessageW` / `SendMessageTimeoutW` (`WM_MOUSEMOVE`, `WM_LBUTTONDOWN`, `WM_LBUTTONUP`, `WM_MOUSEWHEEL`, `WM_KEYDOWN`, `WM_KEYUP`, `WM_CHAR`) sent to the target `HWND` at the control's center coordinate (from UIA `BoundingRectangle` or Vision LLM grounding).
-  3. **Tier 3 (Optional Rust SDK Bridge):** Named-pipe IPC command to `ui-qa-sdk` embedded in the target `egui`/`iced`/`Slint` app.
+  3. **Tier 3 (Optional Rust SDK Bridge):** Lightweight localhost TCP IPC command to `ui-qa-sdk` embedded in the target `egui`/`iced`/`Slint` app.
 - **F3.3 Fallback:** If `winit` in a specific target build filters out unfocused `WM_LBUTTONDOWN` messages and `ui-qa-sdk` is not linked, provide an opt-in **Isolated Desktop / Micro-Focus Fallback** (`CreateDesktopW` or `< 10 ms` cursor save → click → restore when user mouse is idle for `> 3 s`).
 
 ### F4 — Autonomous UI Crawler (M)
@@ -42,7 +42,7 @@
   - **Concrete Improvement Suggestions:** specific, actionable recommendations for layout, widget choice, error handling, and Rust GUI (`egui`/`iced`/`Slint`) code improvements.
 - **F6.3** Run local deterministic heuristic checks (zero-size bounding boxes, overlapping UIA rects, off-screen controls, unnamed interactive controls, high-contrast ratio checks) automatically before invoking the LLM to save tokens and latency.
 
-### F7 — Live QA Dashboard UI (Tauri v2) (M)
+### F7 — Live QA Dashboard UI (Edge WebView2 App Shell / Tauri v2, see ADR 0002) (M)
 - **F7.1** Provide a desktop dashboard to configure target `.exe`/logs, select Crawl or Goal mode, watch live background captures with interactive bounding-box overlays, inspect the synchronized UI action ↔ hardware log timeline, and browse prioritized findings (Critical / High / Medium / Suggestion).
 - **F7.2** Allow pausing/resuming runs, comparing current screens side-by-side against baseline snapshots, and filtering findings by category (Hardware/Log Error, Visual Bug, UX Suggestion, Crash/Hang, Accessibility).
 
@@ -51,7 +51,7 @@
 - **F8.2** Optionally create deduplicated GitHub Issues in the target application's repository via `gh issue create` or GitHub REST API with embedded repro steps, hardware log snippets, and UX recommendations.
 
 ### F9 — Optional Lightweight Rust Target SDK (`crates/sdk`) (S)
-- **F9.1** Provide a lightweight, zero-unsafe Rust crate (`ui-qa-sdk`) that developers of `egui`, `iced`, or `Slint` apps can optionally enable behind a `#[cfg(feature = "qa-hook")]` flag to expose custom widget metadata, internal app state assertions, and direct synthetic input reception over a local Windows named pipe (`\\.\pipe\ui-qa-tester-<pid>`).
+- **F9.1** Provide a lightweight, zero-unsafe Rust crate (`ui-qa-sdk`) that developers of `egui`, `iced`, or `Slint` apps can optionally enable behind a `#[cfg(feature = "qa-hook")]` flag to expose custom widget metadata, internal app state assertions, and direct synthetic input reception over an authenticated loopback connection (`127.0.0.1:<port>`).
 
 ---
 

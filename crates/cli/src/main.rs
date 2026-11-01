@@ -216,7 +216,7 @@ fn main() -> anyhow::Result<()> {
             let cfg = QaSessionConfig::default();
             let toml_str = cfg.to_toml_string()?;
             std::fs::write(&path, toml_str)?;
-            println!("Wrote starter configuration to {}", path.display());
+            println!("{} {}", i18n.t("cli.init.wrote"), path.display());
         }
         Commands::SelfTest { output } => {
             let mut cfg = QaSessionConfig {
@@ -231,10 +231,26 @@ fn main() -> anyhow::Result<()> {
             let bundle =
                 run_qa_session(&cfg, true).map_err(|e| anyhow::anyhow!("Self-test failed: {e}"))?;
             println!("{}", i18n.t("cli.selftest.pass"));
-            println!("  Markdown Report : {}", bundle.report_md_path.display());
-            println!("  JSON Report     : {}", bundle.report_json_path.display());
-            println!("  Screenshots Dir : {}", bundle.screenshots_dir.display());
-            println!("  Findings Count  : {}", bundle.report.findings.len());
+            println!(
+                "{} {}",
+                i18n.t("cli.report.markdown"),
+                bundle.report_md_path.display()
+            );
+            println!(
+                "{} {}",
+                i18n.t("cli.report.json"),
+                bundle.report_json_path.display()
+            );
+            println!(
+                "{} {}",
+                i18n.t("cli.report.screenshots"),
+                bundle.screenshots_dir.display()
+            );
+            println!(
+                "{} {}",
+                i18n.t("cli.report.findings"),
+                bundle.report.findings.len()
+            );
         }
         Commands::Replay {
             config,
@@ -260,7 +276,11 @@ fn main() -> anyhow::Result<()> {
 
             let summary_path = replay_action_trace(&cfg, &trace, stop_at_step)
                 .map_err(|e| anyhow::anyhow!("Replay failed: {e}"))?;
-            println!("Trace replay complete. Summary: {}", summary_path.display());
+            println!(
+                "{} {}",
+                i18n.t("cli.replay.complete"),
+                summary_path.display()
+            );
         }
         Commands::SyncIssues {
             report,
@@ -402,15 +422,25 @@ fn main() -> anyhow::Result<()> {
                 .map_err(|e| anyhow::anyhow!("Run failed: {e}"))?;
 
             println!(
-                "Session '{}' complete ({} steps, {} findings).",
+                "{} '{}' ({} steps, {} findings).",
+                i18n.t("cli.session.complete"),
                 bundle.report.session_name,
                 bundle.report.total_steps,
                 bundle.report.findings.len()
             );
-            println!("  Markdown Report : {}", bundle.report_md_path.display());
-            println!("  JSON Report     : {}", bundle.report_json_path.display());
             println!(
-                "  Element Coverage: {:.1}% ({}/{} interactive elements)",
+                "{} {}",
+                i18n.t("cli.report.markdown"),
+                bundle.report_md_path.display()
+            );
+            println!(
+                "{} {}",
+                i18n.t("cli.report.json"),
+                bundle.report_json_path.display()
+            );
+            println!(
+                "{} {:.1}% ({}/{} interactive elements)",
+                i18n.t("cli.session.coverage"),
                 bundle.report.coverage_percentage,
                 bundle.report.interactive_elements_exercised,
                 bundle.report.interactive_elements_discovered
@@ -440,7 +470,8 @@ fn main() -> anyhow::Result<()> {
                     .collect();
                 if !failing.is_empty() {
                     eprintln!(
-                        "\n[CI/CD GATE FAILED] {} finding(s) met or exceeded severity threshold '{:?}':",
+                        "\n{} {} finding(s) met or exceeded severity threshold '{:?}':",
+                        i18n.t("cli.gate.failed"),
                         failing.len(),
                         threshold
                     );
@@ -455,7 +486,8 @@ fn main() -> anyhow::Result<()> {
             if let Some(max_f) = max_thresh {
                 if bundle.report.findings.len() > max_f {
                     eprintln!(
-                        "\n[CI/CD GATE FAILED] Total findings ({}) exceeded maximum threshold ({})",
+                        "\n{} Total findings ({}) exceeded maximum threshold ({})",
+                        i18n.t("cli.gate.failed"),
                         bundle.report.findings.len(),
                         max_f
                     );

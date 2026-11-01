@@ -1431,6 +1431,7 @@ dependencies = [
  "ui-qa-ai",
  "ui-qa-core",
  "ui-qa-sdk",
+ "uuid",
  "windows",
 ]
 
@@ -1445,6 +1446,7 @@ dependencies = [
  "serde",
  "serde_json",
  "ui-qa-core",
+ "uuid",
  "windows",
 ]
 

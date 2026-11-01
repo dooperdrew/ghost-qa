@@ -159,7 +159,7 @@ impl UnifiedVisionClient {
         let b64_png = encode_png_base64(frame)?;
         let prompt = build_critic_prompt(frame.width(), frame.height(), elements, recent_logs);
         let url = format!(
-            "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+            "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
         );
 
         let body = serde_json::json!({
@@ -183,6 +183,7 @@ impl UnifiedVisionClient {
         let resp = self
             .http
             .post(&url)
+            .header("x-goog-api-key", api_key)
             .json(&body)
             .send()
             .map_err(|e| e.to_string())?;
