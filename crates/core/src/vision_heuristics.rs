@@ -17,6 +17,25 @@ pub fn analyze_screen_heuristics(
 
     // 1. Check each control for missing accessibility name or out-of-window clipping
     for (idx, el) in elements.iter().enumerate() {
+        // Tofu / Missing Font Glyph Check: detect replacement characters (U+FFFD \u{FFFD} or placeholder square '□')
+        if el.name.contains('\u{FFFD}') || el.name.contains('□') {
+            findings.push(Finding {
+                id: format!("VIS-GLYPH-TOFU-{step_index:03}-{idx:02}"),
+                severity: Severity::High,
+                category: FindingCategory::VisualLayoutBug,
+                title: format!("Missing Font Glyph / Tofu Box in Control '{}'", el.name),
+                description: format!(
+                    "Control '{}' contains unrendered or replacement character glyphs (U+FFFD or '□'). The active font family lacks glyph support for one or more unicode characters in this label.",
+                    el.name
+                ),
+                suggested_fix: "Configure a font fallback family supporting these symbols (e.g. `FontDefinitions` in `egui`, `Segoe UI Symbol` / `Noto Sans Symbols` in `winit`/`iced`/`Slint`), or replace the symbol with an accessible SVG/icon font.".to_string(),
+                bounds: Some(el.bounds),
+                repro_steps: vec![format!("Observe control '{}' at step #{step_index}", el.name)],
+                correlated_logs: Vec::new(),
+                screenshot_path: None,
+            });
+        }
+
         let is_interactive = matches!(
             el.control_type_id,
             50000 | 50002 | 50003 | 50004 | 50005 | 50011 | 50013 | 50015 | 50019
@@ -241,6 +260,18 @@ mod tests {
                 bounds: BoundingRect::new(580, 100, 120, 40), // Overflows 640px width!
                 source: ControlSource::UiaAccessKit,
             },
+            UiElement {
+                id: "btn4".to_string(),
+                name: "Settings □ Tab".to_string(), // Missing glyph tofu box!
+                role: "TabItem".to_string(),
+                control_type_id: 50019,
+                value: None,
+                is_enabled: true,
+                supports_invoke: true,
+                is_selected: Some(true),
+                bounds: BoundingRect::new(20, 150, 100, 30),
+                source: ControlSource::UiaAccessKit,
+            },
         ];
 
         let findings = analyze_screen_heuristics(1, 640, 420, &elements, None);
@@ -253,5 +284,8 @@ mod tests {
         assert!(findings
             .iter()
             .any(|f| f.title.contains("Overlapping Interactive Controls")));
+        assert!(findings
+            .iter()
+            .any(|f| f.title.contains("Missing Font Glyph / Tofu Box")));
     }
 }
