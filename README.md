@@ -134,6 +134,16 @@ ui-qa-cli.exe windows
 
 ---
 
+## 🛠️ Developer Tooling & Verification Gate
+
+The repository includes pre-configured automation scripts in `scripts/`:
+- **Tiered Verification Gate (`scripts/verify-gate.ps1`):** Dual-mode gate (`-Mode Fast` for subagents / pre-commit, `-Mode Full` for lead committers / release) with automated `rustfmt`, `clippy -D warnings`, parallel `cargo test`, and release compilation.
+- **Isolated Git Worktrees (`scripts/manage-worktree.ps1`):** Spawns, runs gates, and merges isolated worktrees (`.worktrees/task-<id>`) for parallel multi-agent development without branch collision.
+- **Dynamic Skill Scoping (`scripts/manage-skill.ps1`):** Manages local workspace skills in `.agents/skills/` (0 global tokens) vs global machine skills in `~/.gemini/config/skills/`.
+- **Packaging & Manifests (`scripts/package-release.ps1`, `scripts/generate-manifests.ps1`):** Builds release archives and WinGet/Scoop package manifests.
+
+---
+
 ## 📚 Documentation System
 
 - [Central Documentation Hub (`docs/README.md`)](docs/README.md)
