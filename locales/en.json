@@ -1,6 +1,6 @@
 {
-  "app.title": "UI QA Tester — Autonomous Windows & HIL QA Dashboard",
-  "app.subtitle": "Hands-free UI inspection, background capture, hardware log correlation & AI UX critique",
+  "app.title": "GhostQA — Autonomous Invisible Windows & HIL QA Dashboard",
+  "app.subtitle": "Hands-free background UI inspection, hardware log correlation & AI UX critique",
   "nav.setup": "1. Session & Target Setup",
   "nav.live": "2. Live Autonomous Run",
   "nav.findings": "3. Findings & AI UX Critique",

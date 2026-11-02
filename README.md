@@ -1,20 +1,20 @@
 <div align="center">
 
-![UI QA Tester](assets/hero-banner.svg)
+![GhostQA](assets/hero-banner.svg)
 
-# UI QA Tester 🎯 🔬
+# GhostQA 👻 🔬
 
-### Autonomous, Non-Intrusive Windows Desktop & Hardware-in-the-Loop (HIL) QA Agent
+### Autonomous, Invisible Windows Desktop & Hardware-in-the-Loop (HIL) QA Agent
 
 **Hands-free UI exploration, background frame capture, real-time hardware telemetry correlation, and Multimodal AI vision critique (Gemini / Local VLMs) for any Windows application.**
 
-[![CI](https://github.com/DooperDrew/ui-qa-tester/actions/workflows/ci.yml/badge.svg)](https://github.com/DooperDrew/ui-qa-tester/actions/workflows/ci.yml)
-[![Latest Release](https://img.shields.io/github/v/release/DooperDrew/ui-qa-tester?logo=github&label=release%20v0.2.1)](https://github.com/DooperDrew/ui-qa-tester/releases/latest)
-[![Stars](https://img.shields.io/github/stars/DooperDrew/ui-qa-tester?style=flat&logo=github)](https://github.com/DooperDrew/ui-qa-tester/stargazers)
+[![CI](https://github.com/DooperDrew/ghost-qa/actions/workflows/ci.yml/badge.svg)](https://github.com/DooperDrew/ghost-qa/actions/workflows/ci.yml)
+[![Latest Release](https://img.shields.io/github/v/release/DooperDrew/ghost-qa?logo=github&label=release%20v0.2.1)](https://github.com/DooperDrew/ghost-qa/releases/latest)
+[![Stars](https://img.shields.io/github/stars/DooperDrew/ghost-qa?style=flat&logo=github)](https://github.com/DooperDrew/ghost-qa/stargazers)
 [![Rust Stable](https://img.shields.io/badge/rust-stable-brightgreen.svg)](https://www.rust-lang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Platform: Windows 10/11 x64](https://img.shields.io/badge/platform-Windows%2010%2F11%20x64-informational.svg?logo=windows)](https://microsoft.com/windows)
-[![Zero Focus Stealing](https://img.shields.io/badge/focus-100%25%20non--intrusive%20(zero%20stealing)-success.svg)](#key-capabilities)
+[![Invisible Hands](https://img.shields.io/badge/focus-100%25%20invisible%20(zero%20stealing)-success.svg)](#the-ghostqa-philosophy-why-ghost)
 [![Multimodal AI](https://img.shields.io/badge/AI%20Critic-Gemini%202.5%20%2F%20Local%20VLM-purple.svg?logo=google)](crates/ai)
 
 <br/>
@@ -26,33 +26,33 @@
 
 ---
 
-## 💡 Why UI QA Tester?
+## 👻 The GhostQA Philosophy: Why "Ghost"?
 
-Testing Windows desktop applications—especially those connected to physical hardware devices (serial controllers, USB/Bluetooth HID, embedded probes, CAN interfaces) or built with modern GPU canvases—is notoriously painful:
+Traditional desktop UI automation tools act like noisy, clumsy intruders: they snatch your physical mouse cursor, pull windows aggressively to the foreground, freeze if another window covers them, and completely ignore what your connected hardware is doing behind the scenes.
 
-- **Focus Stealing:** Legacy desktop automation tools (Selenium, Appium, PyAutoGUI, TestStack.White) hijack your physical mouse cursor and pull windows to the foreground. You can't write code, chat, or use your computer while tests run.
-- **Silent Hardware Failures:** A UI button turns green, but behind the scenes a serial COM port dropped a packet, an MCU timed out, or a daemon silently `NACK`ed without surfacing an alert to the screen.
-- **Opaque GPU-Rendered Canvases:** Modern desktop apps (`egui`, `iced`, `Slint`, `Tauri`, `Flutter`) paint directly to DirectX/Vulkan canvases via `wgpu`. Legacy Win32/MSAA test tools see only a single opaque `HWND` with no discoverable controls.
-- **Vague Bug Reports:** Traditional tools emit raw stack traces or brittle pixel diffs that fail to tell developers—or AI coding agents—what actually went wrong and how to fix it.
+**GhostQA behaves like an invisible phantom:**
 
-`ui-qa-tester` solves this by delivering an **autonomous, 100% hands-free QA agent** that runs in the background, extracts deep accessibility trees (`AccessKit` / Windows UI Automation), brackets every interaction with real-time hardware telemetry, critiques visual/layout quality via Multimodal AI, and produces **agent-ready fix prompts and GitHub Issues**.
+1. **Invisible Hands (Zero Focus Stealing):** Using Win32 `PrintWindow(PW_RENDERFULLCONTENT)` and background `PostMessageW` translated to true client coordinates, GhostQA navigates, clicks, and types entirely in the background. You can write code, join a video call, or game on the exact same monitor while GhostQA silently crawls and verifies your desktop app.
+2. **Multimodal AI Eyes:** Powered by Google Gemini 2.5 Flash and local VLMs (Ollama / LM Studio), GhostQA doesn't just look for fatal crash dumps—it critiques visual hierarchy, detects truncated text (`VIS-CLIP`), flags missing accessibility labels (`A11Y-NAME`), checks WCAG AA contrast, and catches font rendering errors (`\u{FFFD}`).
+3. **Hardware Stethoscope:** GhostQA brackets every UI interaction within a configurable time window (`[-50 ms, +1500 ms]`) against physical device telemetry (serial COM ports, USB/HID logs, `stdout`/`stderr`, process CPU/RAM) to expose silent timeouts, dropped packets, and UI thread freezes (`IsHungAppWindow`).
+4. **AI Coding Agent Bridge:** Traditional tools spit out unhelpful stack traces. GhostQA outputs structured Markdown reports, deterministic action traces (`action-trace.json`), and GitHub Issues formatted with targeted fix prompts for AI coding agents (Copilot, Cursor, Antigravity) to resolve immediately.
 
-### Comparison: Traditional UI Testing vs. UI QA Tester
+### Comparison: Traditional Desktop Testing vs. GhostQA
 
-| Capability | Traditional Desktop Automation (PyAutoGUI, WinAppDriver, Selenium) | UI QA Tester 🎯 |
+| Capability | Traditional Automation (PyAutoGUI, WinAppDriver, Selenium) | GhostQA 👻 |
 |---|---|---|
-| **Focus & Mouse Freedom** | ❌ Hijacks physical cursor; tests fail if window is covered | ✅ **100% Non-intrusive background execution** (`PrintWindow` + `PostMessageW`). Never steals focus. |
-| **Hardware Correlation** | ❌ None; hardware is treated as an external black box | ✅ **Real-time millisecond correlation** for COM/USB, serial logs, `stdout`/`stderr`, and CPU/RAM health. |
-| **Target App Support** | ⚠️ Limited strictly to legacy Win32/WPF controls | ✅ **Universal Windows**: GPU canvas apps (`egui`, `iced`, `Slint`, `Tauri`) via `AccessKit` + any Win32/WPF/Qt/C++ `.exe`. |
-| **Visual & UX Bug Detection** | ❌ Brittle pixel diffs or rigid manual assertion scripts | ✅ **Multimodal AI Vision Critic** (Gemini 2.5 Flash / Local VLMs) + deterministic layout heuristics. |
+| **Mouse & Cursor Control** | ❌ Hijacks physical mouse; test breaks if window is covered | ✅ **100% Invisible background execution** (`PrintWindow` + `PostMessageW`). Never steals focus. |
+| **Hardware Correlation** | ❌ None; hardware devices are treated as opaque black boxes | ✅ **Real-time millisecond correlation** for COM/USB, serial logs, `stdout`/`stderr`, and CPU/RAM health. |
+| **Target App Support** | ⚠️ Limited to legacy Win32/WPF controls; fails on modern GPU canvases | ✅ **Universal Windows**: GPU canvas apps (`egui`, `iced`, `Slint`, `Tauri`) via `AccessKit` + any Win32/WPF/Qt/C++ `.exe`. |
+| **Visual & UX Critique** | ❌ Brittle pixel diffs or rigid assertion scripts | ✅ **Multimodal AI Vision Critic** (Gemini 2.5 Flash / Local VLMs) + deterministic spatial heuristics. |
 | **AI Agent Handoff** | ❌ Raw logs requiring manual human triage | ✅ **Agent-Ready Markdown Reports & 1-Click GitHub Issues** with structured prompts for AI coding agents. |
 | **Bug Reproduction** | ⚠️ Flaky and difficult to reproduce | ✅ **Deterministic Action Trace & Replay** (`action-trace.json`) step-by-step. |
 
 ---
 
-## 🌐 Supported Application Ecosystem
+## 🌐 Universal Windows Desktop Ecosystem
 
-`ui-qa-tester` is a **universal Windows desktop QA engine**. If it launches as an `.exe` or displays a visible window on Windows 10/11, `ui-qa-tester` can test it:
+GhostQA is built as a **universal Windows desktop QA engine**. If your application runs as an `.exe` or displays a visible window on Windows 10/11, GhostQA can test it hands-free:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────────────────┐
@@ -90,7 +90,7 @@ Testing Windows desktop applications—especially those connected to physical ha
 
 ### 5. 🔁 Deterministic Action Trace & Replay
 - Automatically records every executed step, coordinates, element metadata, and hardware acknowledgment into `action-trace.json`.
-- Reproduce complex bug sequences on demand with:
+- Reproduce complex bug sequences on demand:
   ```powershell
   ui-qa-cli.exe replay --trace qa-output/action-trace.json [--stop-at-step N]
   ```
@@ -113,7 +113,7 @@ Testing Windows desktop applications—especially those connected to physical ha
 
 ## 📸 Empirical Verification & Real-World QA
 
-Below are real annotated screenshots generated autonomously by `ui-qa-tester` during live QA runs:
+Below are real annotated screenshots generated autonomously by GhostQA during live QA runs:
 
 <div align="center">
 
@@ -133,7 +133,7 @@ flowchart LR
     TARGET["Target Windows App<br/>(egui / iced / Slint / Tauri / Win32)"] <-->|"PrintWindow (PW_RENDERFULLCONTENT)<br/>+ IUIAutomation (AccessKit)"| PLATFORM
     TARGET -->|"stdout / stderr / Log Files<br/>(Serial, HID, NamedPipe)"| CORR
     
-    subgraph ENGINE["ui-qa-tester Engine"]
+    subgraph ENGINE["GhostQA Engine"]
         PLATFORM["crates/platform<br/>(Capture, Job Object & Background Actuator)"]
         CORR["crates/core::correlator<br/>(Hardware Log Correlator)"]
         VISION["crates/ai<br/>(Gemini API / Local VLM / Heuristics)"]
@@ -153,12 +153,12 @@ flowchart LR
 
 ## 📥 Download & Installation
 
-Pre-built Windows x64 binaries are published on [**GitHub Releases**](https://github.com/DooperDrew/ui-qa-tester/releases/latest) — no Rust toolchain required:
+Pre-built Windows x64 binaries are published on [**GitHub Releases**](https://github.com/DooperDrew/ghost-qa/releases/latest) — no Rust toolchain required:
 
 ### Option 1: Microsoft WinGet (Recommended)
 ```powershell
 # Install via community repository:
-winget install DooperDrew.UiQaTester
+winget install DooperDrew.GhostQA
 
 # Or install directly from local repository manifest:
 winget install --manifest packaging/winget/manifests/d/DooperDrew/UiQaTester/0.2.1/
@@ -166,13 +166,13 @@ winget install --manifest packaging/winget/manifests/d/DooperDrew/UiQaTester/0.2
 
 ### Option 2: Scoop Package Manager
 ```powershell
-scoop install https://raw.githubusercontent.com/DooperDrew/ui-qa-tester/main/packaging/scoop/ui-qa-tester.json
+scoop install https://raw.githubusercontent.com/DooperDrew/ghost-qa/main/packaging/scoop/ui-qa-tester.json
 ```
 
 ### Option 3: Guided Windows Setup Wizard (Zero-Elevation GUI)
-1. Download `ui-qa-tester-v0.2.1-windows-x64.zip` from [GitHub Releases](https://github.com/DooperDrew/ui-qa-tester/releases/latest).
+1. Download `ghost-qa-v0.2.1-windows-x64.zip` from [GitHub Releases](https://github.com/DooperDrew/ghost-qa/releases/latest).
 2. Extract the archive and double-click **`setup.cmd`** (or run `.\scripts\setup-wizard.ps1`).
-3. The wizard installs into `%LOCALAPPDATA%\Programs\ui-qa-tester`, adds the binaries to your User `PATH`, creates Start Menu and Desktop shortcuts, and registers in Windows Settings ("Installed apps") with clean uninstallation support.
+3. The wizard installs into `%LOCALAPPDATA%\Programs\ghost-qa`, adds the binaries to your User `PATH`, creates Start Menu and Desktop shortcuts, and registers in Windows Settings ("Installed apps") with clean uninstallation support.
 
 *For silent CI deployments:*
 ```powershell
@@ -180,7 +180,7 @@ scoop install https://raw.githubusercontent.com/DooperDrew/ui-qa-tester/main/pac
 ```
 
 ### Option 4: Portable ZIP Archive
-Extract `ui-qa-tester-v0.2.1-windows-x64.zip` anywhere and run `ui-qa-ui.exe` or `ui-qa-cli.exe` directly. Zero registry changes.
+Extract `ghost-qa-v0.2.1-windows-x64.zip` anywhere and run `ui-qa-ui.exe` or `ui-qa-cli.exe` directly. Zero registry changes.
 
 ---
 
@@ -245,17 +245,18 @@ The repository includes pre-configured automation scripts in `scripts/`:
 
 ## 🗺️ Roadmap & Milestones
 
-- [x] **[M0: Win32 & UIA Spike 🔬](https://github.com/DooperDrew/ui-qa-tester/milestone/1)** — Verified `PrintWindow(PW_RENDERFULLCONTENT)` latency ($10.67\text{ ms}$), UIA `TitleBar` (`50037`) filtering, and `PostMessageW`.
-- [x] **[M1: Core Engine (`crates/core`)](https://github.com/DooperDrew/ui-qa-tester/milestone/2)** — `#![forbid(unsafe_code)]`, correlator, visual heuristics, and report generator.
-- [x] **[M2: Platform & Background Actuation (`crates/platform`)](https://github.com/DooperDrew/ui-qa-tester/milestone/3)** — Background capture, depth-5 `AccessKit` walker, client-coordinate `PostMessageW`.
-- [x] **[M3: Headless CLI (`crates/cli`)](https://github.com/DooperDrew/ui-qa-tester/milestone/4)** — `run`, `self-test`, `windows`, and `init-config`.
-- [x] **[M4: Live QA Dashboard UI (`crates/ui`)](https://github.com/DooperDrew/ui-qa-tester/milestone/5)** — WebView2 shell, live annotated canvas, synchronized timeline, and i18n (`en`/`it`).
-- [x] **[M5: Hardening & Empirical Verification](https://github.com/DooperDrew/ui-qa-tester/milestone/6)** — NFR benchmarks (`p95 ≤ 50ms`, `0.32ms/1,000 lines`), 10k log soak, and real-world [`MagicBridge`](https://github.com/DooperDrew/magicbridge) testing.
-- [x] **[M6: Packaging & Multi-Channel Distribution](https://github.com/DooperDrew/ui-qa-tester/milestone/7)** — Setup Wizard, WinGet & Scoop manifests, GitHub Release v0.1.0.
-- [x] **[M7: Project Retrospective](https://github.com/DooperDrew/ui-qa-tester/milestone/8)** — Retrospective mining git history and lessons learned.
+- [x] **[M0: Win32 & UIA Spike 🔬](https://github.com/DooperDrew/ghost-qa/milestone/1)** — Verified `PrintWindow(PW_RENDERFULLCONTENT)` latency ($10.67\text{ ms}$), UIA `TitleBar` (`50037`) filtering, and `PostMessageW`.
+- [x] **[M1: Core Engine (`crates/core`)](https://github.com/DooperDrew/ghost-qa/milestone/2)** — `#![forbid(unsafe_code)]`, correlator, visual heuristics, and report generator.
+- [x] **[M2: Platform & Background Actuation (`crates/platform`)](https://github.com/DooperDrew/ghost-qa/milestone/3)** — Background capture, depth-5 `AccessKit` walker, client-coordinate `PostMessageW`.
+- [x] **[M3: Headless CLI (`crates/cli`)](https://github.com/DooperDrew/ghost-qa/milestone/4)** — `run`, `self-test`, `windows`, and `init-config`.
+- [x] **[M4: Live QA Dashboard UI (`crates/ui`)](https://github.com/DooperDrew/ghost-qa/milestone/5)** — WebView2 shell, live annotated canvas, synchronized timeline, and i18n (`en`/`it`).
+- [x] **[M5: Hardening & Empirical Verification](https://github.com/DooperDrew/ghost-qa/milestone/6)** — NFR benchmarks (`p95 ≤ 50ms`, `0.32ms/1,000 lines`), 10k log soak, and real-world [`MagicBridge`](https://github.com/DooperDrew/magicbridge) testing.
+- [x] **[M6: Packaging & Multi-Channel Distribution](https://github.com/DooperDrew/ghost-qa/milestone/7)** — Setup Wizard, WinGet & Scoop manifests, GitHub Release v0.1.0.
+- [x] **[M7: Project Retrospective](https://github.com/DooperDrew/ghost-qa/milestone/8)** — Retrospective mining git history and lessons learned.
 - [x] **M8: Multi-Agent Architecture & UI Explorer** — Central documentation hub (`docs/README.md`), UI Architecture tab, and multi-agent methodology.
 - [x] **M9: User Experience Onboarding & Interactive QA Matrix** — Guided Windows Setup Wizard (`setup-wizard.ps1`), First-Run Onboarding Setup Wizard tab, responsive `<850px` navigation, and interactive self-test verification matrix.
 - [x] **v0.2.1 RFC Integration & Audit Hardening** — Action trace replay, automated issue sync, continuous watch mode, Win32 Job Object orphan prevention, Gemini header authentication, and persistent log tailing.
+- [x] **GhostQA Brand Transformation 👻** — Repositioned narrative to GhostQA, added hero vector branding, universal desktop compatibility, and enhanced discoverability.
 
 ---
 

@@ -1,9 +1,9 @@
-# UI QA Tester — User Guide
+# GhostQA — User Guide 👻
 
 ## 1. Overview
-`ui-qa-tester` is an autonomous Windows UI and Hardware-in-the-Loop (HIL) QA agent designed for developers building Windows desktop applications (especially Rust native GUIs: `iced`, `egui`, and `Slint`) that communicate with connected hardware.
+**GhostQA** (`https://github.com/DooperDrew/ghost-qa`) is an autonomous, invisible Windows Desktop and Hardware-in-the-Loop (HIL) QA agent. Like a phantom, it operates hands-free in the background without stealing your physical mouse, keyboard, or active window focus.
 
-It operates **hands-free in the background**:
+It operates **100% hands-free in the background**:
 - Captures the target window surface via `PrintWindow(PW_RENDERFULLCONTENT)` even when the window is behind your IDE or on a secondary monitor.
 - Inspects the Windows UI Automation (`IUIAutomation` / `AccessKit`) tree and dispatches clicks/keys via UIA patterns, `PostMessageW`, or the optional `ui-qa-sdk` IPC bridge—never hijacking your physical mouse cursor or active window focus.
 - Correlates every UI interaction with `stdout`, `stderr`, and diagnostic log files to catch silent hardware timeouts, `NACK`s, panics, and UI hangs.
@@ -14,21 +14,21 @@ It operates **hands-free in the background**:
 ## 2. Quick Start & Installation
 
 ### Channel 1: Guided Setup Wizard (`setup.cmd`)
-1. Download `ui-qa-tester-v0.1.0-windows-x64.zip` from [GitHub Releases](https://github.com/DooperDrew/ui-qa-tester/releases/latest).
+1. Download `ghost-qa-v0.2.1-windows-x64.zip` from [GitHub Releases](https://github.com/DooperDrew/ghost-qa/releases/latest).
 2. Extract the archive and run `setup.cmd` (or `powershell -ExecutionPolicy Bypass -File .\setup-wizard.ps1`).
-3. Binaries are installed into `%LOCALAPPDATA%\Programs\ui-qa-tester` without requiring administrator privileges.
+3. Binaries are installed into `%LOCALAPPDATA%\Programs\ghost-qa` without requiring administrator privileges.
 
 ### Channel 2: Portable ZIP
-Extract `ui-qa-tester-v0.1.0-windows-x64.zip` into any directory and run `ui-qa-ui.exe` or `ui-qa-cli.exe` directly.
+Extract `ghost-qa-v0.2.1-windows-x64.zip` into any directory and run `ui-qa-ui.exe` or `ui-qa-cli.exe` directly.
 
 ### Channel 3: Scoop
 ```powershell
-scoop install packaging/scoop/ui-qa-tester.json
+scoop install https://raw.githubusercontent.com/DooperDrew/ghost-qa/main/packaging/scoop/ui-qa-tester.json
 ```
 
 ### Channel 4: Microsoft WinGet
 ```powershell
-winget install --manifest packaging/winget/manifests/d/DooperDrew/UiQaTester/0.1.0
+winget install DooperDrew.GhostQA
 ```
 
 ---

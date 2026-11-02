@@ -13,9 +13,9 @@ use ui_qa_platform::orchestrator::{replay_action_trace, run_qa_session};
 
 #[derive(Debug, Parser)]
 #[command(
-    name = "ui-qa-cli",
+    name = "ghost-cli",
     version,
-    about = "Autonomous, non-intrusive Windows Desktop & Hardware-in-the-Loop QA Agent"
+    about = "GhostQA 👻: Autonomous, invisible Windows Desktop & Hardware-in-the-Loop QA Agent"
 )]
 struct Cli {
     /// UI/CLI language ("en" or "it")

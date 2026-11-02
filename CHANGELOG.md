@@ -2,6 +2,14 @@
 
 Chronological record of milestones, decisions and discoveries. Newest first.
 
+## 2026-11-02 — GhostQA Rebranding & Narrative Transformation 👻
+- **Brand & Narrative Identity:**
+  - Formally rebranded the repository, dashboard, and CLI ecosystem to **GhostQA** (`https://github.com/DooperDrew/ghost-qa`).
+  - Aligned the core narrative around GhostQA's invisible background execution: *like a phantom, it operates hands-free without stealing physical mouse, keyboard, or window focus*.
+  - Renamed the GitHub repository from `ui-qa-tester` to `ghost-qa` with full redirect preservation.
+  - Updated hero banner (`assets/hero-banner.svg`), Live Dashboard UI (`crates/ui/src/dashboard.html`), i18n catalogs (`en.json`, `it.json`), `AGENTS.md`, and documentation hub (`docs/README.md`, `docs/01-vision.md`, `docs/04-ux.md`, `docs/user-guide.md`).
+  - Updated CLI command metadata to `ghost-cli` and `GhostQA 👻`.
+
 ## 2026-11-02 — Repository Audit, Security Hardening & Concurrency Safety
 - **Repository Stabilization & Gate Reliability (ISSUE-01, ISSUE-10):**
   - Cleaned untracked experimental stubs and reverted broken syntax; updated workspace `Cargo.toml`.

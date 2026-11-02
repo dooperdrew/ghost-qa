@@ -1,15 +1,15 @@
-# 01 — Vision
+# 01 — Vision: GhostQA 👻
 
-> Status: **APPROVED** | Working name: **ui-qa-tester**
+> Status: **APPROVED** | Official Project Name: **GhostQA** (`ghost-qa`)
 
 ## Problem
-Developing Windows desktop applications powered by **Rust native GUI frameworks (`iced`, `egui`, `Slint`)** that interact with physical connected hardware introduces a painful testing bottleneck:
-1. **Manual UI + Hardware Verification Fatigue:** Every code change requires launching the app, manually clicking through tabs/sliders/buttons, watching hardware diagnostic logs (`stdout`, `stderr`, log files) to confirm the device responded, and visually checking for layout regressions.
-2. **Existing UI Test Tools Fail on GPU-Rendered Rust GUIs:** Web tools (Playwright, Cypress) only inspect HTML DOMs. Traditional Windows UIA tools (WinAppDriver, FlaUI, Pywinauto) require brittle hand-coded selectors, hijack the developer's physical mouse cursor and keyboard focus via `SendInput`, fail when custom `wgpu`/shader widgets omit UIA patterns, and have zero awareness of visual aesthetics or UX quality.
-3. **Silent Hardware & UX Defects:** A button click might succeed in the UI while emitting a hardware timeout in `stderr` 200 ms later, or a label might clip/overlap at a certain window size—issues that traditional pass/fail assertions completely miss unless a human is staring at the screen.
+Developing Windows desktop applications that interact with physical connected hardware introduces a painful testing bottleneck:
+1. **Manual UI + Hardware Verification Fatigue:** Every code change requires launching the app, manually clicking through tabs/sliders/buttons, watching hardware diagnostic logs (`stdout`, `stderr`, serial files) to confirm the device responded, and visually checking for layout regressions.
+2. **Focus-Stealing Automation Tools:** Traditional Windows automation tools (WinAppDriver, FlaUI, Pywinauto, PyAutoGUI) seize the developer's physical mouse cursor and keyboard focus via `SendInput`. You cannot code, join meetings, or use your PC while tests are running. Moreover, they fail on modern GPU-rendered canvases (`egui`, `iced`, `Slint`, `Tauri`, `Flutter`).
+3. **Silent Hardware & UX Defects:** A button click might turn green in the UI while emitting a serial communication timeout in `stderr` 200 ms later, or a label might clip/overlap at a certain window size—issues that traditional pass/fail assertions completely miss.
 
 ## Goal
-Build an autonomous, hands-free **Windows UI & Hardware-in-the-Loop QA Agent and Live Dashboard (`ui-qa-tester`)** that launches or attaches to any Windows application (with first-class support for `iced`, `egui`, and `Slint`), explores and tests the interface in the background without stealing the user's mouse/keyboard focus, correlates every UI action with real-time hardware logs and process telemetry, critiques visual layout and UX via multimodal AI (Gemini API or local VLMs), and outputs actionable, agent-ready bug and improvement reports.
+Build **GhostQA 👻** — an autonomous, invisible Windows Desktop and Hardware-in-the-Loop (HIL) QA Agent and Live Dashboard. Like a phantom, GhostQA operates hands-free in the background without stealing the user's mouse or keyboard focus, explores and tests applications autonomously, correlates every UI interaction with real-time hardware logs and process telemetry, critiques visual layout and UX via Multimodal AI (Gemini 2.5 Flash or local VLMs), and outputs actionable, agent-ready fix prompts and GitHub Issues.
 
 ## Target users
 - **Solo developers and engineering teams** building Windows desktop applications in Rust (`iced`, `egui`, `Slint`) or native Win32 that control or monitor connected hardware (USB/HID peripherals, serial sensors, audio/MIDI gear, embedded controllers) on the same workstation where they actively code.

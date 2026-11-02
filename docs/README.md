@@ -1,6 +1,6 @@
-# ui-qa-tester Documentation System
+# GhostQA Documentation System 👻
 
-This directory contains the canonical specifications, empirical spike findings, architectural blueprints, and living governance logs for **`ui-qa-tester`**.
+This directory contains the canonical specifications, empirical spike findings, architectural blueprints, and living governance logs for **GhostQA** (`https://github.com/DooperDrew/ghost-qa`).
 
 In an agent-assisted and autonomous engineering environment, **the codebase specifications are the primary interface between human intent and AI execution**. Keeping technical truth in version-controlled markdown files prevents context drift, hallucinated constraints, architectural fragmentation, and abandoned conventions.
 
@@ -12,7 +12,7 @@ Whenever an agent or human developer enters the repository, documents must be co
 
 ```mermaid
 flowchart TD
-    D1["01-vision.md<br/><b>Vision & Non-Goals</b><br/><i>Why does ui-qa-tester exist?</i>"]
+    D1["01-vision.md<br/><b>Vision & Non-Goals</b><br/><i>Why does GhostQA exist?</i>"]
     D2["02-requirements.md<br/><b>Requirements & Budgets</b><br/><i>What are the latency, RAM, and non-intrusive rules?</i>"]
     D3["03-architecture.md<br/><b>Architecture & Boundaries</b><br/><i>7-crate workspace & 3-tier background actuation</i>"]
     D4["m0-spike-findings.md<br/><b>Empirical Ground Truth</b><br/><i>PrintWindow vs WGC, AccessKit UIA & PostMessageW</i>"]

@@ -1,10 +1,10 @@
 # AGENTS.md — Mandatory Operating Guidelines for AI Agents
 
-> You are working on **ui-qa-tester** (`https://github.com/DooperDrew/ui-qa-tester`).
+> You are working on **GhostQA** (`https://github.com/DooperDrew/ghost-qa`).
 > These rules are binding for every agent and every conversation in this repository.
 
 ## 1. Mission
-**ui-qa-tester** is an autonomous, non-intrusive Windows UI and Hardware-in-the-Loop (HIL) QA agent built for Windows desktop applications (specifically targeting Rust native GUIs: `iced`, `egui`, and `Slint`). It launches or attaches to a target `.exe`, explores screens and executes plain-English test goals in the background without stealing the developer's physical mouse or keyboard focus, correlates every UI interaction with real-time hardware logs (`stdout`, `stderr`, diagnostic log files) and process health (CPU, RAM, hangs, crashes), uses multimodal AI (Gemini API or local OpenAI-compatible VLMs) plus Windows UI Automation (UIA) to detect visual/layout bugs and propose concrete UX improvements, and exports agent-ready Markdown/JSON reports, annotated screenshots, visual regression diffs, and GitHub Issues.
+**GhostQA 👻** is an autonomous, invisible Windows Desktop and Hardware-in-the-Loop (HIL) QA agent. Like a phantom, it operates hands-free in the background without stealing the user's physical mouse, keyboard, or window focus. It launches or attaches to any Windows target `.exe` (supporting Rust native GUIs: `iced`, `egui`, `Slint`, as well as `Tauri`, `Win32`, `WPF`, and `C++`), explores screens autonomously, correlates every UI interaction with real-time hardware telemetry (`stdout`, `stderr`, diagnostic serial/USB log files, and CPU/RAM health), critiques visual polish via Multimodal AI (Google Gemini API or local VLMs) and deterministic heuristics, and exports agent-ready Markdown/JSON reports, annotated screenshots, and GitHub Issues.
 
 ## 2. Mandatory reading order (before any implementation)
 1. `docs/01-vision.md`: problem, principles, non-goals
