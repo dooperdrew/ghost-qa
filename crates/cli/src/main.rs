@@ -29,6 +29,7 @@ struct Cli {
 #[derive(Debug, Subcommand)]
 enum Commands {
     /// Run an autonomous crawl or goal-driven QA session
+    #[command(alias = "crawl")]
     Run {
         /// Path to qa-session.toml configuration file
         #[arg(long)]

@@ -105,6 +105,7 @@ pub struct QaSessionConfig {
     pub destructive_control_regex: String,
     pub hardware: HardwareTelemetryConfig,
     pub ai: AiProviderConfig,
+    #[serde(default)]
     pub goals: Vec<QaGoalStep>,
     pub baseline_dir: Option<PathBuf>,
     pub output_dir: PathBuf,
