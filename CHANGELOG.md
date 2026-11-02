@@ -21,6 +21,11 @@ Chronological record of milestones, decisions and discoveries. Newest first.
   - Documented ADR `0002-edge-webview2-app-shell.md` and reconciled requirements / architecture specs for localhost TCP loopback and Edge WebView2 `--app` shell.
   - Fully internationalized all CLI terminal output strings across English and Italian catalogs.
   - Documented 15 comprehensive issue specifications in `docs/issues/` and master audit plan in `docs/audit-issues-and-implementation-plan.md`.
+- **GitHub Discoverability & Universal Desktop Positioning:**
+  - Configured 15 GitHub repository topics (`ai-agent`, `qa-agent`, `ui-testing`, `hardware-in-the-loop`, `hil-testing`, `windows-desktop`, `gemini-api`, `multimodal-ai`, `rust`, `gui-testing`, `accesskit`, `ui-automation`, `autonomous-testing`, `tauri`, `visual-regression`).
+  - Rewrote repository description, homepage URL, and CLI `about` metadata to accurately position `ui-qa-tester` as a universal Windows & HIL QA agent.
+  - Added SVG hero banner (`assets/hero-banner.svg`) and empirical annotated screenshots in `assets/`.
+  - Added comparison matrix, ecosystem architecture table, and updated all install references to v0.2.1 in `README.md`.
 
 ## 2026-10-27 — Release v0.2.1 (RFC Feedback Integration: Deterministic Replay, Tab Idempotency, DWM Calibration, Multi-HWND & Automated Issue Sync)
 - **Tab & Toggle Idempotency (`UX-DEAD-BTN` Fix):**

@@ -15,7 +15,7 @@ use ui_qa_platform::orchestrator::{replay_action_trace, run_qa_session};
 #[command(
     name = "ui-qa-cli",
     version,
-    about = "Autonomous Windows UI & Hardware-in-the-Loop QA Runner for Rust GUI Apps (iced, egui, Slint, Tauri)"
+    about = "Autonomous, non-intrusive Windows Desktop & Hardware-in-the-Loop QA Agent"
 )]
 struct Cli {
     /// UI/CLI language ("en" or "it")

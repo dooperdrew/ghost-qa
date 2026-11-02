@@ -15,7 +15,11 @@ version = "0.2.1"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/DooperDrew/ui-qa-tester"
+homepage = "https://github.com/DooperDrew/ui-qa-tester#readme"
 authors = ["DooperDrew"]
+description = "Autonomous, non-intrusive Windows desktop & Hardware-in-the-Loop QA agent powered by multimodal AI vision and Windows UI Automation"
+keywords = ["qa-agent", "ui-testing", "hardware-in-the-loop", "windows", "multimodal-ai"]
+categories = ["development-tools::testing", "accessibility", "gui"]
 
 [workspace.dependencies]
 serde = { version = "1.0", features = ["derive"] }
