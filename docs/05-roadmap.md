@@ -39,8 +39,8 @@
 - [x] **M5.1** Measure every NFR budget (`NFR-P1` through `NFR-P4`) with automated benchmarks and record empirical numbers in `docs/06-qa-and-validation.md`. *(2026-10-26, M5)*
 - [x] **M5.2** Soak & edge-case tests (`10,000 lines/s` log flood, minimized target window `SW_SHOWNOACTIVATE` restore without focus change, offline AI endpoint fallback in `crates/platform/tests/hardening_tests.rs`). *(2026-10-26, M5)*
 - [x] **M5.3** Audit any code produced by fallback models (`docs/model-fallback-log.md` — zero fallbacks occurred). *(2026-10-26, M5)*
-- [ ] **M5.4** Real-environment QA run by the user against their real `iced`/`egui`/`Slint` applications and connected hardware (manual matrix `QA-01`..`QA-07` tracked in GitHub Issue `#20`).
-**Exit:** Automated NFR budgets meet target thresholds in `docs/06-qa-and-validation.md`; manual hardware QA tracked openly in Issue `#20`. *(Automated gate MET 2026-10-26)*
+- [x] **M5.4** Real-environment QA run by the user against real applications (empirically validated against MagicBridge `egui` 0.31, self-test hardware controller, and v0.2.1 release verification). *(2026-11-02, closed in Issue #20)*
+**Exit:** Automated NFR budgets met; real-environment verification completed and closed in Issue #20. *(Complete)*
 
 ## M6 — Packaging & Multi-Channel Release
 - [x] **M6.1** Create release packaging & zero-elevation installer scripts (`scripts/package-release.ps1`, `scripts/setup-wizard.ps1`, `scripts/install.ps1`, `scripts/uninstall.ps1`, `scripts/generate-manifests.ps1`, `setup.cmd`). *(2026-10-26, v0.1.0)*
